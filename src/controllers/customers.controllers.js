@@ -25,14 +25,14 @@ export async function getCustomersId(req, res) {
       [id]
     );
 
-    if (customerId.rowCount === 0)
+    if (customerId.rowCount === 0){
       return res.status(404).send("Customer Id not found!");
-
+    }
     const resultId = {
       ...customerId.rows[0],
       birthday: dayjs(customerId.rows[0].birthday).format("YYYY-MM-DD"),
     };
-    res.send(resultId);
+    res.status(200).send(resultId);
   } catch (error) {
     res.status(500).send(error.message);
   }
