@@ -4,7 +4,6 @@ import gameSchema from "../schemas/games.schemas.js";
 import { getGames, postGames } from "../controllers/games.controllers.js";
 
 
-
 const gamesRouter = Router()
 
 gamesRouter.get("/games", getGames)
