@@ -19,12 +19,10 @@ export async function postGames(req,res){
         if ( checkGame.rowCount > 0 ){
             return res.status(409).send({message:'Jogo já cadastrado!'});
         }
-            await db.query(`
-            INSERT INTO games (name, image, "stockTotal", "pricePerDay")
-                VALUES($1, $2, $3, $4);
-            `, [name, image, stockTotal, pricePerDay]);
 
-            res.sendStatus(201)
+    const result = await db.query('INSERT INTO games (name, image, stockTotal, pricePerDay) VALUES ($1, $2, $3, $4)', [name, image, stockTotal, pricePerDay]);
+
+    res.status(201).send(result);
         
     } catch (error) {
         res.status(500).send(error.message)
