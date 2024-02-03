@@ -25,15 +25,14 @@ export async function getCustomersId(req, res) {
       [id]
     );
 
-    if (customerId.rowCount === 0) {
-      res.status(404).send("Customer Id not found!");
-    } else {
-      const resultId = {
-        ...customerId.rows[0],
-        birthday: dayjs(customerId.rows[0].birthday).format("YYYY-MM-DD"),
-      };
-      res.send(resultId);
-    }
+    if (customerId.rowCount === 0)
+      return res.status(404).send("Customer Id not found!");
+
+    const resultId = {
+      ...customerId.rows[0],
+      birthday: dayjs(customerId.rows[0].birthday).format("YYYY-MM-DD"),
+    };
+    res.send(resultId);
   } catch (error) {
     res.status(500).send(error.message);
   }
@@ -43,15 +42,30 @@ export async function postCustomers(req, res) {
   const { name, phone, cpf, birthday } = req.body;
 
   try {
-    await db.query(
+    const duplicateCpfCheck = await db.query(
       `
-            INSERT INTO customers(name, phone, cpf, birthday)
-            VALUES( $1, $2, $3, $4);
-        `,
-      [name, phone, cpf, birthday]
+      SELECT COUNT(*) AS count
+      FROM customers
+      WHERE cpf = $1;
+    `,
+      [cpf]
     );
 
-    res.sendStatus(201);
+    const isDuplicateCpf = duplicateCpfCheck.rows[0].count > 0;
+
+    if (isDuplicateCpf) {
+      res.status(409).send("CPF already exists. Please use a different CPF.");
+    } else {
+      await db.query(
+        `
+        INSERT INTO customers(name, phone, cpf, birthday)
+        VALUES( $1, $2, $3, $4);
+        `,
+        [name, phone, cpf, birthday]
+      );
+
+      res.sendStatus(201);
+    }
   } catch (error) {
     res.status(500).send(error.message);
   }
