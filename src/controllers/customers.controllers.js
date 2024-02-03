@@ -7,8 +7,7 @@ export async function getCustomers(req, res) {
     const customers = result.rows.map((c) => {
       return {
         ...c,
-        birthday: dayjs(c.birthday).format("YYYY-MM-DD"),
-      };
+        birthday: dayjs(c.birthday).format("YYYY-MM-DD")};
     });
 
     res.send(customers);
