@@ -7,7 +7,8 @@ export async function getCustomers(req, res) {
     const customers = result.rows.map((c) => {
       return {
         ...c,
-        birthday: dayjs(c.birthday).format("YYYY-MM-DD")};
+        birthday: dayjs(c.birthday).format("YYYY-MM-DD"),
+      };
     });
 
     res.send(customers);
@@ -19,17 +20,16 @@ export async function getCustomers(req, res) {
 export async function getCustomersId(req, res) {
   const { id } = req.params;
   try {
-    const customerId = await db.query(
-      `SELECT * FROM customers WHERE id = $1;`,
-      [id]
-    );
-
-    if (customerId.rowCount === 0){
+    const response = await db.query(`SELECT * FROM customers WHERE id = $1;`, [
+      id,
+    ]);
+    if (response.rowCount === 0)
       return res.status(404).send("Customer Id not found!");
-    }
+
+    const newResponse = response.rows[0];
     const resultId = {
-      ...customerId.rows[0],
-      birthday: dayjs(customerId.rows[0].birthday).format("YYYY-MM-DD"),
+      ...newResponse,
+      birthday: dayjs(newResponse.birthday).format("YYYY-MM-DD"),
     };
     res.status(200).send(resultId);
   } catch (error) {
