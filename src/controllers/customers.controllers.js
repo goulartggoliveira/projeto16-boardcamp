@@ -70,3 +70,28 @@ export async function postCustomers(req, res) {
     res.status(500).send(error.message);
   }
 }
+
+export async function putCustomersId(req,res){
+    const { id } = req.params; 
+
+    const {name, phone, cpf, birthday } = req.body;
+
+    try {
+        
+        const customer = await db.query(`SELECT id, cpf FROM customers WHERE cpf = $1;`, [cpf]);
+
+        if ( customer.rowCount > 0 && id !== customer.rows[0].id)
+            return res.status(409).send({message:'CPF cadastrado para outro cliente!'});
+
+        await db.query(`
+            UPDATE customers 
+                SET name = $1, phone = $2, cpf = $3, birthday = $4
+                WHERE id = $5;
+        `, [name, phone, cpf, birthday, id]);
+
+        res.sendStatus(200);
+        
+    } catch (err) {
+        res.status(500).send(err.message)
+    }
+}
