@@ -78,10 +78,9 @@ export async function putCustomersId(req,res){
 
     try {
         
-        const customer = await db.query(`SELECT id, cpf FROM customers WHERE cpf = $1;`, [cpf]);
+        const customer = await db.query(`SELECT * FROM customers WHERE cpf = $1 AND id != $2;`, [cpf, id]);
 
-        if ( customer.rowCount > 0 && id !== customer.rows[0].id)
-            return res.status(409).send({message:'CPF cadastrado para outro cliente!'});
+        if ( customer.rowCount > 0) return res.status(409).send('CPF cadastrado para outro cliente!');
 
         await db.query(`
             UPDATE customers 
