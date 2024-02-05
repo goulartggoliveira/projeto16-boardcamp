@@ -77,7 +77,7 @@ export async function rentalsIdReturn(req, res) {
         if ( rental.returnDate !== null)
             return res.status(400).send('Game return date')
         
-        const rentDate = dayjs(rental.rendDate).format('YYYY-MM-DD');
+        const rentDate = dayjs(rental.rentDate).format('YYYY-MM-DD');
         const difference = dayjs().startOf('day').diff(dayjs(rentDate).startOf('day'), 'days');
         
         let delayFree = null
