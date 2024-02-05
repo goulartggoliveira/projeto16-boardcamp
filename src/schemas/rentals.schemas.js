@@ -5,3 +5,4 @@ export const rentalSchema = joi.object({
     gameId: joi.number().integer().required(),
     daysRented: joi.number().integer().min(1).required()
 })
+
