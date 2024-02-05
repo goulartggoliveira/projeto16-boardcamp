@@ -54,7 +54,7 @@ export async function postRentals(req,res){
             VALUES ($1, $2, $3, $4, $5, NULL, NULL);
         `, [customerId, gameId, daysRented, dayjs().format("YYYY-MM-DD"), daysRented * game.rows[0].pricePerDay])
 
-        res.sendStatus(201)
+        res.sendStatus(200)
             
         } catch (error) {
             res.status(500).send(error.message)
@@ -65,22 +65,19 @@ export async function rentalsIdReturn(req, res) {
 
     const { id } = req.params;
 
+    let delayFee = null
     try {
 
         const result = await db.query(`SELECT * FROM rentals WHERE id = $1;`, [id]);
 
-        if ( result.rowCount === 0)
-            return res.status(404).send('Game entry rental not found');
+        if ( result.rowCount === 0) return res.sendStatus(404);
         
         const rental = result.rows[0];
-
-        if ( rental.returnDate !== null)
-            return res.status(400).send('Game return date')
+        if ( rental.returnDate !== null) return res.sendStatus(400)
         
-        const rentDate = dayjs(rental.rentDate).format('YYYY-MM-DD');
-        const difference = dayjs().startOf('day').diff(dayjs(rentDate).startOf('day'), 'days');
+        const rentDate = dayjs(rental.rentDate);
+        const difference = dayjs().diff(rentDate, "days");
         
-        let delayFee = null
 
         if ( difference > rental.daysRented){
             delayFee = (rental.originalPrice / rental.daysRented) * (difference - rental.daysRented)
