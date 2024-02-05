@@ -80,16 +80,16 @@ export async function rentalsIdReturn(req, res) {
         const rentDate = dayjs(rental.rentDate).format('YYYY-MM-DD');
         const difference = dayjs().startOf('day').diff(dayjs(rentDate).startOf('day'), 'days');
         
-        let delayFree = null
+        let delayFee = null
 
         if ( difference > rental.daysRented){
-            delayFree = (rental.originalPrice / rental.daysRented) * (difference - rental.daysRented)
+            delayFee = (rental.originalPrice / rental.daysRented) * (difference - rental.daysRented)
         }
         
 
         await db.query(`
-            UPDATE rentals SET returnDate = $1, delayFree = $2 WHERE id = $3;
-        `, [dayjs().format('YYYY-MM-DD'), delayFree, id]);
+            UPDATE rentals SET returnDate = $1, delayFee = $2 WHERE id = $3;
+        `, [dayjs().format('YYYY-MM-DD'), delayFee, id]);
 
         res.sendStatus(200)
     } catch (err) {
