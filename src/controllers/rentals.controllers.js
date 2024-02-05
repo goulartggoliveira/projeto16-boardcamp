@@ -65,8 +65,6 @@ export async function rentalsIdReturn(req, res) {
 
     const { id } = req.params;
 
-    let delayFree = null;
-
     try {
 
         const result = await db.query(`SELECT * FROM rentals WHERE id = $1;`, [id]);
@@ -80,13 +78,17 @@ export async function rentalsIdReturn(req, res) {
             return res.status(400).send('Game return date')
         
         const rentDate = dayjs(rental.rendDate).format('YYYY-MM-DD');
-        const difference = dayjs().diff(rentDate, "days");
+        const difference = dayjs().startOf('day').diff(dayjs(rentDate).startOf('day'), 'days');
+        
+        let delayFree = null
+
         if ( difference > rental.daysRented){
             delayFree = (rental.originalPrice / rental.daysRented) * (difference - rental.daysRented)
         }
+        
 
         await db.query(`
-            UPDATE rentals SET returnDate = $1, delayFee = $2 WHERE id = $3;
+            UPDATE rentals SET returnDate = $1, delayFree = $2 WHERE id = $3;
         `, [dayjs().format('YYYY-MM-DD'), delayFree, id]);
 
     } catch (err) {
