@@ -85,7 +85,7 @@ export async function rentalsIdReturn(req, res) {
         
 
         await db.query(`
-            UPDATE rentals SET returnDate = $1, delayFee = $2 WHERE id = $3;
+            UPDATE rentals SET "returnDate" = $1, "delayFee" = $2 WHERE id = $3;
         `, [dayjs().format('YYYY-MM-DD'), delayFee, id]);
 
         res.sendStatus(200)
