@@ -97,10 +97,7 @@ export async function rentalsIdReturn(req, res) {
 export async function deleteRentalsId(req, res){
     const { id } = req.params
     try {
-        const rental = await db.query(`SELECT * FROM rentals WHERE id = $1;`, [id]);
-        if ( rental.rowCount === 0) return res.status(404).send('Registry not found!');
-        if ( rental.rows[0].returnDate !== null) return res.status(400).send('Registry cannot be deleted');
-
+        
         await db.query(`DELETE FROM rentals WHERE id=$1;`, [id])
         res.sendStatus(200)
     } catch (err) {
