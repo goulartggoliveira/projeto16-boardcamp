@@ -91,6 +91,7 @@ export async function rentalsIdReturn(req, res) {
             UPDATE rentals SET returnDate = $1, delayFree = $2 WHERE id = $3;
         `, [dayjs().format('YYYY-MM-DD'), delayFree, id]);
 
+        res.sendStatus(200)
     } catch (err) {
         res.status(500).send(err.message)
     }
@@ -106,7 +107,7 @@ export async function deleteRentalsId(req, res){
         if ( rental.rows[0].returnDate !== null)
             return res.status(400).send('Registry cannot be deleted');
 
-        await db.query(`DELETE FROM rentals WHERE id=$1`, [id])
+        await db.query(`DELETE FROM rentals WHERE id=$1;`, [id])
         res.sendStatus(200)
     } catch (err) {
         res.status(500).send(err.message)
